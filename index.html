@@ -5,6 +5,17 @@
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <style>
+            .overlay {
+                fill: none;
+                pointer-events: all;
+            }
+
+            .focus circle {
+                fill: steelblue;
+            }
+        
+        </style>
 </head>
 
 <body>
@@ -178,6 +189,38 @@
                 .x(function (d) { return xScale(d.datetime) })
                 .y(function (d) { return y(d.usage) })
             )
+
+            var focus = svg.append("g")
+            .attr("class", "focus")
+            .style("display", "none");
+
+            focus.append("circle")
+                .attr("r", 5);
+
+            svg.append("rect")
+            .attr("class", "overlay")
+            .attr("width", width)
+            .attr("height", height)
+            .on("mouseover", function() { focus.style("display", null); tooltip.style("display", null);  })
+            .on("mouseout", function() { focus.style("display", "none"); tooltip.style("display", "none"); })
+            .on("mousemove", mousemove);
+
+            function mousemove() {
+
+                var x0 = xScale.invert(d3.mouse(this)[0]);
+                console.log(x0);
+             
+                bisectDateTime = d3.bisector(function(d) { return d.datetime; }).left;
+                let i = bisectDateTime(data, x0);
+                let d = data[i];
+                console.log(i);
+                console.log(d);
+                var xC = d3.timeParse("%Q")(d.datetime)
+                console.log(xC);
+                console.log(xScale(xC));
+                console.log(y(d.usage));
+                focus.attr("transform", "translate(" + xScale(xC) + "," + y(d.usage) + ")");
+            }
 
 
 
