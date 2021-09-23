@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="my_dataviz"></div>
+    <script>
+        // set the dimensions and margins of the graph
+        var margin = { top: 10, right: 30, bottom: 30, left: 60 },
+            width = $(window).width() - margin.left - margin.right
+        height = 400 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        let data = [
+        {
+            "datetime" : 1631788207000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631788507000,
+            "usage" : 112
+        },
+        {
+            "datetime" : 1631788807000,
+            "usage" : 500
+        },
+        {
+            "datetime" : 1631789107000,
+            "usage" : 450
+        },
+        {
+            "datetime" : 1631789407000,
+            "usage" : 410
+        },
+        {
+            "datetime" : 1631790007000,
+            "usage" : 420
+        },
+        {
+            "datetime" : 1631791207000,
+            "usage" : 800
+        },
+        {
+            "datetime" : 1631791807000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631792407000,
+            "usage" : 200
+        },
+        {
+            "datetime" : 1631792707000,
+            "usage" : 300
+        }
+        ];
+
+        let data2 = [
+        {
+            "datetime" : 1631788207000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631788507000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631788807000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631789107000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631789407000,
+            "usage" : 410
+        },
+        {
+            "datetime" : 1631790007000,
+            "usage" : 420
+        },
+        {
+            "datetime" : 1631791207000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631791807000,
+            "usage" : 100
+        },
+        {
+            "datetime" : 1631792407000,
+            "usage" : 200
+        },
+        {
+            "datetime" : 1631792707000,
+            "usage" : 100
+        }
+        ];
+
+        var parsedTimeData = data.map(function(d) {
+            return d3.timeParse("%Q")(d.datetime)
+          });
+
+        // Add X axis --> it is a date format
+
+        var xScale = d3.scaleTime()
+        .domain(d3.extent(parsedTimeData))
+        .range([0, width]);
+
+        let index = 0;
+        var  x = d3.axisBottom(xScale)
+        .tickValues(parsedTimeData)
+        .tickFormat(function(d) {
+            index = index + 1;
+            console.log("index"  + index);
+            if(index % 3) {
+                return d3.timeFormat("%m/%d %H:%M")(d); 
+            }
+          return d3.timeFormat("%H:%M")(d);
+        });
+
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(x);
+
+        svg.append("text")             
+            .attr("transform",
+                  "translate(" + (width/2) + " ," + 
+                                 (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Time");
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([0, d3.max(data, function (d) { return d.usage; })])
+            .range([height, 0]);
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+    // text label for the y axis
+        svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Memory Usage (In Bytes)");   
+
+        // Add the line
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+                .x(function (d) { return xScale(d.datetime) })
+                .y(function (d) { return y(d.usage) })
+            )
+
+        svg.append("path")
+            .datum(data2)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+                .x(function (d) { return xScale(d.datetime) })
+                .y(function (d) { return y(d.usage) })
+            )
+
+
+
+            
+    </script>
+</body>
+
+</html>
